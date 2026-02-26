@@ -4,7 +4,6 @@ import FeedPost from '../components/FeedPost';
 import FilterBar from '../components/FilterBar';
 import LeftSidebar from '../components/LeftSidebar';
 import RightSidebar from '../components/RightSidebar';
-import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 
 const FeedPage = ({ showComposer: externalShowComposer, onCloseComposer }) => {
