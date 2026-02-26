@@ -3,7 +3,6 @@ import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 
 const PostComposer = ({ onPostCreated, isOpen, onClose }) => {
-  const { user } = useAuth();
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('general');
   const [ratings, setRatings] = useState([

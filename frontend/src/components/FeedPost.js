@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 
 const FeedPost = ({ post, onPostFlagged }) => {
-  const { user, isFaculty, isAdmin } = useAuth();
+  const { isFaculty, isAdmin } = useAuth();
   const [liked, setLiked] = useState(post.userLiked || false);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [showComments, setShowComments] = useState(false);
@@ -21,6 +21,7 @@ const FeedPost = ({ post, onPostFlagged }) => {
     if (showComments && comments.length === 0) {
       fetchComments();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showComments]);
 
   const fetchComments = async () => {

@@ -8,7 +8,6 @@ import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 
 const FeedPage = ({ showComposer: externalShowComposer, onCloseComposer }) => {
-  const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({ category: 'all', sort: 'recent' });
   const [loading, setLoading] = useState(true);
@@ -30,6 +29,7 @@ const FeedPage = ({ showComposer: externalShowComposer, onCloseComposer }) => {
 
   useEffect(() => {
     fetchFeed();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   const fetchFeed = async () => {
