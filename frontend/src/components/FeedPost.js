@@ -1,93 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 
 const FeedPost = ({ post, onPostFlagged }) => {
   const { isFaculty, isAdmin } = useAuth();
-  const [liked, setLiked] = useState(post.userLiked || false);
-  const [likeCount, setLikeCount] = useState(post.likeCount);
-  const [showComments, setShowComments] = useState(false);
   const [showFlagModal, setShowFlagModal] = useState(false);
   const [flagReason, setFlagReason] = useState('');
   const [flagging, setFlagging] = useState(false);
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
-  const [loadingComments, setLoadingComments] = useState(false);
-  const [addingComment, setAddingComment] = useState(false);
-  const [commentCount, setCommentCount] = useState(post.commentCount);
-
-  // Fetch comments when showComments is toggled
-  useEffect(() => {
-    if (showComments && comments.length === 0) {
-      fetchComments();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showComments]);
-
-  const fetchComments = async () => {
-    try {
-      setLoadingComments(true);
-      const response = await api.get(`/api/feedback/${post._id}/comments`);
-      
-      if (response.data.success) {
-        setComments(response.data.data.comments);
-      }
-    } catch (err) {
-      console.error('Error fetching comments:', err);
-    } finally {
-      setLoadingComments(false);
-    }
-  };
-
-  const handleLike = async () => {
-    try {
-      if (liked) {
-        // Unlike
-        await api.delete(`/api/feedback/${post._id}/like`);
-        setLikeCount(likeCount - 1);
-        setLiked(false);
-      } else {
-        // Like
-        await api.post(`/api/feedback/${post._id}/like`);
-        setLikeCount(likeCount + 1);
-        setLiked(true);
-      }
-    } catch (err) {
-      console.error('Error toggling like:', err);
-      // Revert on error
-      if (err.response?.data?.error?.code === 'ALREADY_LIKED') {
-        setLiked(true);
-      } else if (err.response?.data?.error?.code === 'NOT_LIKED') {
-        setLiked(false);
-      }
-    }
-  };
-
-  const handleAddComment = async (e) => {
-    e.preventDefault();
-    
-    if (!newComment.trim()) {
-      return;
-    }
-
-    try {
-      setAddingComment(true);
-      const response = await api.post(`/api/feedback/${post._id}/comment`, {
-        content: newComment.trim()
-      });
-
-      if (response.data.success) {
-        setComments([...comments, response.data.data.comment]);
-        setCommentCount(response.data.data.commentCount);
-        setNewComment('');
-      }
-    } catch (err) {
-      console.error('Error adding comment:', err);
-      alert(err.response?.data?.error?.message || 'Failed to add comment');
-    } finally {
-      setAddingComment(false);
-    }
-  };
 
   const handleFlag = async () => {
     if (!flagReason.trim()) {
@@ -214,46 +133,21 @@ const FeedPost = ({ post, onPostFlagged }) => {
       )}
 
       {/* Actions */}
-      <div className="flex items-center gap-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-        <button
-          onClick={handleLike}
-          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-        >
-          <svg
-            className={`w-5 h-5 ${liked ? 'fill-current text-red-500' : ''}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-            />
-          </svg>
-          <span className="text-sm font-medium">{likeCount}</span>
-        </button>
-
-        <button
-          onClick={() => setShowComments(!showComments)}
-          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-            />
-          </svg>
-          <span className="text-sm font-medium">{commentCount}</span>
-        </button>
-
+      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+          <span className="flex items-center gap-1">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            {post.viewCount || 0} views
+          </span>
+        </div>
+        
         {(isFaculty || isAdmin) && (
           <button 
             onClick={() => setShowFlagModal(true)}
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors ml-auto"
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -268,67 +162,7 @@ const FeedPost = ({ post, onPostFlagged }) => {
         )}
       </div>
 
-      {/* Comments Section */}
-      {showComments && (
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          {/* Add Comment Form */}
-          <form onSubmit={handleAddComment} className="mb-4">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Add a comment..."
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                disabled={addingComment}
-              />
-              <button
-                type="submit"
-                disabled={addingComment || !newComment.trim()}
-                className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {addingComment ? 'Posting...' : 'Post'}
-              </button>
-            </div>
-          </form>
 
-          {/* Comments List */}
-          {loadingComments ? (
-            <div className="flex justify-center py-4">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
-            </div>
-          ) : comments.length > 0 ? (
-            <div className="space-y-3">
-              {comments.map((comment) => (
-                <div key={comment._id} className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg px-3 py-2">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {comment.authorDisplay}
-                      </p>
-                      <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
-                        {comment.content}
-                      </p>
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-3">
-                      {formatDate(comment.createdAt)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-              No comments yet. Be the first to comment!
-            </p>
-          )}
-        </div>
-      )}
 
       {/* Flag Modal */}
       {showFlagModal && (

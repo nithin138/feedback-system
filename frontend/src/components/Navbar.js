@@ -31,7 +31,7 @@ const Navbar = ({ onCreatePost }) => {
             {/* Desktop navigation */}
             {user && (
               <div className="hidden md:ml-8 md:flex md:space-x-4">
-                {(isFaculty || isAdmin) && (
+                {isFaculty && (
                   <Link
                     to="/analytics"
                     className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400"
@@ -41,26 +41,12 @@ const Navbar = ({ onCreatePost }) => {
                 )}
 
                 {isAdmin && (
-                  <>
-                    <Link
-                      to="/admin/approvals"
-                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400"
-                    >
-                      Approvals
-                    </Link>
-                    <Link
-                      to="/admin/moderation"
-                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400"
-                    >
-                      Moderation
-                    </Link>
-                    <Link
-                      to="/admin/categories"
-                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400"
-                    >
-                      Categories
-                    </Link>
-                  </>
+                  <Link
+                    to="/admin/dashboard"
+                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400"
+                  >
+                    Admin Panel
+                  </Link>
                 )}
               </div>
             )}

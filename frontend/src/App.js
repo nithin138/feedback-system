@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminLayout from './components/AdminLayout';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -11,10 +12,12 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PendingApprovalPage from './pages/PendingApprovalPage';
 import FeedPage from './pages/FeedPage';
-import AnalyticsPage from './pages/AnalyticsPage';
+import FacultyAnalyticsPage from './pages/FacultyAnalyticsPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminFeedbacksPage from './pages/AdminFeedbacksPage';
 import AdminApprovalsPage from './pages/AdminApprovalsPage';
 import AdminModerationPage from './pages/AdminModerationPage';
-import AdminCategoriesPage from './pages/AdminCategoriesPage';
+import AdminCategoriesPageNew from './pages/AdminCategoriesPageNew';
 import AboutPage from './pages/AboutPage';
 import HelpPage from './pages/HelpPage';
 import OAuthCallbackPage from './pages/OAuthCallbackPage';
@@ -58,39 +61,28 @@ function AppContent() {
         <Route
           path="/analytics"
           element={
-            <ProtectedRoute>
-              <AnalyticsPage />
+            <ProtectedRoute requiredRole="faculty">
+              <FacultyAnalyticsPage />
             </ProtectedRoute>
           }
         />
 
-        {/* Admin Routes */}
+        {/* Admin Routes with Layout */}
         <Route
-          path="/admin/approvals"
+          path="/admin/*"
           element={
             <ProtectedRoute requiredRole="admin">
-              <AdminApprovalsPage />
+              <AdminLayout />
             </ProtectedRoute>
           }
-        />
-
-        <Route
-          path="/admin/moderation"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <AdminModerationPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/admin/categories"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <AdminCategoriesPage />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route path="feedbacks" element={<AdminFeedbacksPage />} />
+          <Route path="faculty" element={<AdminApprovalsPage />} />
+          <Route path="moderations" element={<AdminModerationPage />} />
+          <Route path="categories" element={<AdminCategoriesPageNew />} />
+          <Route path="" element={<Navigate to="/admin/dashboard" replace />} />
+        </Route>
 
         {/* Catch all - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
