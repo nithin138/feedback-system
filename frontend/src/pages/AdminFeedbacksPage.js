@@ -24,6 +24,11 @@ const AdminFeedbacksPage = () => {
       const response = await api.get('/api/feedback', { params });
       let data = response.data.data;
 
+      // API returns { feedbacks: [...], pagination: {...} }
+      if (!Array.isArray(data)) {
+        data = data?.feedbacks || [];
+      }
+
       // Apply status filter
       if (statusFilter === 'flagged') {
         data = data.filter(f => f.isFlagged);

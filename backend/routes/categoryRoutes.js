@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect, authorize } = require('../middleware/auth');
+const { authenticateJWT, requireRole } = require('../middleware/auth');
 const {
   getCategories,
   getAllCategories,
@@ -13,9 +13,9 @@ const {
 router.get('/', getCategories);
 
 // Admin routes
-router.get('/all', protect, authorize('admin'), getAllCategories);
-router.post('/', protect, authorize('admin'), createCategory);
-router.put('/:id', protect, authorize('admin'), updateCategory);
-router.delete('/:id', protect, authorize('admin'), deleteCategory);
+router.get('/all', authenticateJWT, requireRole('admin'), getAllCategories);
+router.post('/', authenticateJWT, requireRole('admin'), createCategory);
+router.put('/:id', authenticateJWT, requireRole('admin'), updateCategory);
+router.delete('/:id', authenticateJWT, requireRole('admin'), deleteCategory);
 
 module.exports = router;

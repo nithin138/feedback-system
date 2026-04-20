@@ -9,7 +9,7 @@ const AdminCategoriesPageNew = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    feedbackType: 'general',
+    applicableTo: ['general'],
     isActive: true
   });
 
@@ -63,7 +63,7 @@ const AdminCategoriesPageNew = () => {
     setFormData({
       name: category.name,
       description: category.description || '',
-      feedbackType: category.feedbackType,
+      applicableTo: category.applicableTo || ['general'],
       isActive: category.isActive
     });
     setShowModal(true);
@@ -75,7 +75,7 @@ const AdminCategoriesPageNew = () => {
     setFormData({
       name: '',
       description: '',
-      feedbackType: 'general',
+      applicableTo: ['general'],
       isActive: true
     });
   };
@@ -129,9 +129,11 @@ const AdminCategoriesPageNew = () => {
               )}
 
               <div className="mb-4">
-                <span className="px-3 py-1 text-xs font-medium bg-primary-100 dark:bg-primary-900/20 text-primary-800 dark:text-primary-400 rounded-full capitalize">
-                  {category.feedbackType}
-                </span>
+                {category.applicableTo?.map((type) => (
+                  <span key={type} className="mr-2 px-3 py-1 text-xs font-medium bg-primary-100 dark:bg-primary-900/20 text-primary-800 dark:text-primary-400 rounded-full capitalize">
+                    {type}
+                  </span>
+                ))}
               </div>
 
               <div className="flex gap-2">
@@ -189,19 +191,26 @@ const AdminCategoriesPageNew = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Feedback Type *
+                  Applicable To *
                 </label>
-                <select
-                  value={formData.feedbackType}
-                  onChange={(e) => setFormData({ ...formData, feedbackType: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  required
-                >
-                  <option value="general">General</option>
-                  <option value="faculty">Faculty</option>
-                  <option value="course">Course</option>
-                  <option value="facility">Facility</option>
-                </select>
+                <div className="space-y-2">
+                  {['faculty', 'course', 'facility'].map((type) => (
+                    <label key={type} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={formData.applicableTo.includes(type)}
+                        onChange={(e) => {
+                          const updated = e.target.checked
+                            ? [...formData.applicableTo, type]
+                            : formData.applicableTo.filter(t => t !== type);
+                          setFormData({ ...formData, applicableTo: updated });
+                        }}
+                        className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">{type}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
               <div className="flex items-center">

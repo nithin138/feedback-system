@@ -28,7 +28,9 @@ const FacultyAnalyticsPage = () => {
       const response = await api.get('/api/feedback', {
         params: { category: 'faculty', limit: 50 }
       });
-      setFeedbacks(response.data.data);
+      const data = response.data.data;
+      // API returns { feedbacks: [...], pagination: {...} }
+      setFeedbacks(Array.isArray(data) ? data : (data?.feedbacks || []));
     } catch (err) {
       console.error('Error fetching feedbacks:', err);
     }

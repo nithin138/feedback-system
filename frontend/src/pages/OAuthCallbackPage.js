@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/api';
 
 const OAuthCallbackPage = () => {
   const [searchParams] = useSearchParams();
@@ -23,29 +24,25 @@ const OAuthCallbackPage = () => {
 
       if (token) {
         try {
-          // Store token
+          // Store token first so the api interceptor picks it up
           localStorage.setItem('token', token);
+          if (setToken) setToken(token);
 
-          // Fetch user data
-          const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/me`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
+          // Fetch user data using the api instance (includes auth header)
+          const response = await api.get('/api/auth/me', {
+            headers: { Authorization: `Bearer ${token}` }
           });
 
-          const data = await response.json();
-
-          if (data.success) {
-            const user = data.data.user;
+          if (response.data.success) {
+            const user = response.data.data.user;
             localStorage.setItem('user', JSON.stringify(user));
-            
-            // Update auth context
             if (setUser) setUser(user);
-            if (setToken) setToken(token);
 
             // Redirect based on user status
             if (user.role === 'faculty' && user.approvalStatus === 'pending') {
               navigate('/pending-approval');
+            } else if (user.role === 'admin') {
+              navigate('/admin/dashboard');
             } else {
               navigate('/feed');
             }
@@ -55,7 +52,9 @@ const OAuthCallbackPage = () => {
           }
         } catch (err) {
           console.error('OAuth callback error:', err);
-          setError('Authentication failed. Please try again.');
+          const msg = err.response?.data?.error?.message || 'Authentication failed. Please try again.';
+          setError(msg);
+          localStorage.removeItem('token');
           setTimeout(() => navigate('/login'), 3000);
         }
       } else {

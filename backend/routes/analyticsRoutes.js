@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { protect, authorize } = require('../middleware/auth');
+const { authenticateJWT, requireRole } = require('../middleware/auth');
 const {
   getAdminAnalytics,
   getFacultyAnalytics
 } = require('../controllers/analyticsController');
 
 // Admin analytics
-router.get('/admin', protect, authorize('admin'), getAdminAnalytics);
+router.get('/admin', authenticateJWT, requireRole('admin'), getAdminAnalytics);
 
 // Faculty analytics
-router.get('/faculty', protect, authorize('faculty', 'admin'), getFacultyAnalytics);
+router.get('/faculty', authenticateJWT, requireRole('faculty', 'admin'), getFacultyAnalytics);
 
 module.exports = router;

@@ -133,8 +133,8 @@ const FeedPost = ({ post, onPostFlagged }) => {
       )}
 
       {/* Actions */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between   border-gray-200 dark:border-gray-700">
+        {/* <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
           <span className="flex items-center gap-1">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -142,7 +142,7 @@ const FeedPost = ({ post, onPostFlagged }) => {
             </svg>
             {post.viewCount || 0} views
           </span>
-        </div>
+        </div> */}
         
         {(isFaculty || isAdmin) && (
           <button 

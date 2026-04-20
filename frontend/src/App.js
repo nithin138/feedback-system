@@ -5,6 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './components/AdminLayout';
+import { useAuth } from './context/AuthContext';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -25,6 +26,7 @@ import OAuthCallbackPage from './pages/OAuthCallbackPage';
 function AppContent() {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const location = useLocation();
+  const { isAdmin } = useAuth();
   const isFeedPage = location.pathname === '/feed';
 
   const handleCreatePost = () => {
@@ -37,7 +39,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Navbar onCreatePost={handleCreatePost} />
+      {!isAdmin && <Navbar onCreatePost={handleCreatePost} />}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />

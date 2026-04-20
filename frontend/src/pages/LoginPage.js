@@ -18,7 +18,13 @@ const LoginPage = () => {
     const result = await login(email, password);
 
     if (result.success) {
-      navigate('/feed');
+      // Redirect admin to dashboard, others to feed
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      if (storedUser.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/feed');
+      }
     } else {
       setError(result.error);
     }
