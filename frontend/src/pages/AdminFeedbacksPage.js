@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
 
 const AdminFeedbacksPage = () => {
@@ -9,11 +9,7 @@ const AdminFeedbacksPage = () => {
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  useEffect(() => {
-    fetchFeedbacks();
-  }, [statusFilter, sortBy]);
-
-  const fetchFeedbacks = async () => {
+  const fetchFeedbacks = useCallback(async () => {
     try {
       setLoading(true);
       const params = {
@@ -44,7 +40,11 @@ const AdminFeedbacksPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter, sortBy]);
+
+  useEffect(() => {
+    fetchFeedbacks();
+  }, [fetchFeedbacks]);
 
   const handleDelete = async () => {
     if (!selectedFeedback) return;
